@@ -1,0 +1,6 @@
+com\parkingadmin\ParkingAdminApplication.class
+com\parkingadmin\parking\ParkingController.class
+com\parkingadmin\parking\ParkingSpace.class
+com\parkingadmin\parking\Tariff.class
+com\parkingadmin\config\WebConfig.class
+com\parkingadmin\parking\SpaceStatus.class
