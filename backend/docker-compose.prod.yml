@@ -1,0 +1,31 @@
+# PostgreSQL para producción. No tiene valores por defecto: todas las credenciales son obligatorias.
+# Uso (desde la carpeta backend, con las variables en el entorno o en un archivo .env):
+#   docker compose -f docker-compose.prod.yml up -d
+#   docker compose -f docker-compose.prod.yml down        # conserva los datos
+#
+# Variables requeridas: POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD.
+# Usa un proyecto y un volumen distintos de los de desarrollo.
+
+name: parkly-prod
+
+services:
+  postgres:
+    image: docker.io/library/postgres:18-alpine
+    container_name: parkly-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Define POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Define POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Define POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres-data:
