@@ -26,10 +26,10 @@ public class ParkingController {
     @GetMapping("/dashboard")
     public Map<String, Object> dashboard() {
         List<ParkingSpace> spaces = spaces();
-        long occupied = spaces.stream().filter(space -> space.status() == SpaceStatus.OCCUPIED).count();
-        long reserved = spaces.stream().filter(space -> space.status() == SpaceStatus.RESERVED).count();
-        long available = spaces.stream().filter(space -> space.status() == SpaceStatus.AVAILABLE).count();
-        long maintenance = spaces.stream().filter(space -> space.status() == SpaceStatus.MAINTENANCE).count();
+        long occupied = spaces.stream().filter(space -> space.getStatus() == SpaceStatus.OCCUPIED).count();
+        long reserved = spaces.stream().filter(space -> space.getStatus() == SpaceStatus.RESERVED).count();
+        long available = spaces.stream().filter(space -> space.getStatus() == SpaceStatus.AVAILABLE).count();
+        long maintenance = spaces.stream().filter(space -> space.getStatus() == SpaceStatus.MAINTENANCE).count();
 
         return Map.of(
                 "spaces", spaces,
