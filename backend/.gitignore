@@ -1,0 +1,37 @@
+# Maven build output
+target/
+
+# Compiled class files and archives
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# Spring Boot local config with secrets or machine-specific values
+application-local.properties
+application-local.yml
+
+# IDE / editor files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.apt_generated/
+.sts4-cache/
+.springBeans
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Crash dumps
+hs_err_pid*
+replay_pid*
