@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { ChangeEvent, FormEvent } from 'react'
 import {
   ArrowDownToLine,
   ArrowUpRight,
@@ -11,34 +12,42 @@ import {
   Menu,
   ParkingSquare,
   Plus,
-  Search,
   Settings,
   Ticket,
   TrendingUp,
   WalletCards,
   X,
 } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import type { ActivityType, Dashboard, SpaceStatus, Summary, Tariff } from './types'
 
 const API_URL = 'http://localhost:8080/api'
 
-const statusLabels = {
+const statusLabels: Record<SpaceStatus, string> = {
   AVAILABLE: 'Disponible',
   RESERVED: 'Reservada',
   OCCUPIED: 'Ocupada',
   MAINTENANCE: 'Mantenimiento',
 }
 
-const statusClasses = {
+const statusClasses: Record<SpaceStatus, string> = {
   AVAILABLE: 'space--available',
   RESERVED: 'space--reserved',
   OCCUPIED: 'space--occupied',
   MAINTENANCE: 'space--maintenance',
 }
 
+const statusSummaryKeys = {
+  AVAILABLE: 'available',
+  RESERVED: 'reserved',
+  OCCUPIED: 'occupied',
+  MAINTENANCE: 'maintenance',
+} as const satisfies Record<SpaceStatus, keyof Summary>
+
 function App() {
-  const [dashboard, setDashboard] = useState(null)
-  const [tariffs, setTariffs] = useState([])
-  const [activeSection, setActiveSection] = useState('Resumen')
+  const [dashboard, setDashboard] = useState<Dashboard | null>(null)
+  const [tariffs, setTariffs] = useState<Tariff[]>([])
+  const [activeSection, setActiveSection] = useState<string>('Resumen')
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isTariffModalOpen, setIsTariffModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -48,11 +57,11 @@ function App() {
     Promise.all([
       fetch(`${API_URL}/dashboard`).then((response) => {
         if (!response.ok) throw new Error('No fue posible cargar el dashboard')
-        return response.json()
+        return response.json() as Promise<Dashboard>
       }),
       fetch(`${API_URL}/tariffs`).then((response) => {
         if (!response.ok) throw new Error('No fue posible cargar las tarifas')
-        return response.json()
+        return response.json() as Promise<Tariff[]>
       }),
     ])
       .then(([dashboardData, tariffsData]) => {
@@ -63,7 +72,7 @@ function App() {
       .finally(() => setIsLoading(false))
   }, [])
 
-  const handleCreateTariff = (tariff) => {
+  const handleCreateTariff = (tariff: Tariff) => {
     fetch(`${API_URL}/tariffs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -71,7 +80,7 @@ function App() {
     })
       .then((response) => {
         if (!response.ok) throw new Error('No fue posible guardar la tarifa')
-        return response.json()
+        return response.json() as Promise<Tariff>
       })
       .then((createdTariff) => {
         setTariffs((current) => [...current, createdTariff])
@@ -156,8 +165,20 @@ function App() {
   )
 }
 
-function Sidebar({ activeSection, isOpen, onNavigate, onClose }) {
-  const menuItems = [
+interface SidebarProps {
+  activeSection: string
+  isOpen: boolean
+  onNavigate: (section: string) => void
+  onClose: () => void
+}
+
+interface MenuItem {
+  label: string
+  icon: LucideIcon
+}
+
+function Sidebar({ activeSection, isOpen, onNavigate, onClose }: SidebarProps) {
+  const menuItems: MenuItem[] = [
     { label: 'Resumen', icon: LayoutDashboard },
     { label: 'Plazas', icon: ParkingSquare },
     { label: 'Tarifas', icon: Ticket },
@@ -207,7 +228,7 @@ function Sidebar({ activeSection, isOpen, onNavigate, onClose }) {
   )
 }
 
-function DashboardSection({ dashboard }) {
+function DashboardSection({ dashboard }: { dashboard: Dashboard | null }) {
   if (!dashboard) return null
   const { summary, spaces, activity } = dashboard
 
@@ -223,8 +244,8 @@ function DashboardSection({ dashboard }) {
         <div className="panel occupancy-panel">
           <PanelHeader title="Estado de las plazas" action="Ver todas" />
           <div className="legend">
-            {Object.entries(statusLabels).map(([key, label]) => (
-              <span key={key}><i className={`legend-dot ${statusClasses[key]}`} />{label}<b>{summary[key.toLowerCase()] ?? 0}</b></span>
+            {(Object.keys(statusLabels) as SpaceStatus[]).map((key) => (
+              <span key={key}><i className={`legend-dot ${statusClasses[key]}`} />{statusLabels[key]}<b>{summary[statusSummaryKeys[key]] ?? 0}</b></span>
             ))}
           </div>
           <div className="parking-map">
@@ -270,7 +291,17 @@ function DashboardSection({ dashboard }) {
   )
 }
 
-function StatCard({ label, value, detail, icon: Icon, color, trend, trendDown }) {
+interface StatCardProps {
+  label: string
+  value: string | number
+  detail: string
+  icon: LucideIcon
+  color: 'blue' | 'green' | 'orange' | 'purple'
+  trend?: string
+  trendDown?: boolean
+}
+
+function StatCard({ label, value, detail, icon: Icon, color, trend, trendDown }: StatCardProps) {
   return (
     <article className="stat-card">
       <div className={`stat-icon stat-icon--${color}`}><Icon size={20} /></div>
@@ -281,11 +312,11 @@ function StatCard({ label, value, detail, icon: Icon, color, trend, trendDown })
   )
 }
 
-function PanelHeader({ title, action }) {
+function PanelHeader({ title, action }: { title: string; action: string }) {
   return <div className="panel-header"><h2>{title}</h2><button className="text-button">{action} <ArrowUpRight size={15} /></button></div>
 }
 
-function formatRelativeTime(isoDate) {
+function formatRelativeTime(isoDate: string): string {
   const date = new Date(isoDate)
   const minutes = Math.round((Date.now() - date.getTime()) / 60000)
   if (minutes < 1) return 'Hace un momento'
@@ -295,14 +326,19 @@ function formatRelativeTime(isoDate) {
   return date.toLocaleDateString('es-CO')
 }
 
-function ActivityIcon({ type }) {
+function ActivityIcon({ type }: { type: ActivityType }) {
   if (type === 'payment') return <WalletCards size={16} />
   if (type === 'reservation') return <Ticket size={16} />
   if (type === 'exit') return <ArrowUpRight size={16} />
   return <ArrowDownToLine size={16} />
 }
 
-function TariffSection({ tariffs, onAdd }) {
+interface TariffSectionProps {
+  tariffs: Tariff[]
+  onAdd: () => void
+}
+
+function TariffSection({ tariffs, onAdd }: TariffSectionProps) {
   return (
     <section className="panel tariffs-panel">
       <PanelHeader title="Esquema tarifario" action="Ver historial de cambios" />
@@ -324,10 +360,23 @@ function TariffSection({ tariffs, onAdd }) {
   )
 }
 
-function TariffModal({ onClose, onSubmit }) {
-  const [form, setForm] = useState({ name: '', value: '', unit: 'por hora', active: true })
-  const update = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }))
-  const submit = (event) => {
+interface TariffForm {
+  name: string
+  value: string
+  unit: string
+  active: boolean
+}
+
+interface TariffModalProps {
+  onClose: () => void
+  onSubmit: (tariff: Tariff) => void
+}
+
+function TariffModal({ onClose, onSubmit }: TariffModalProps) {
+  const [form, setForm] = useState<TariffForm>({ name: '', value: '', unit: 'por hora', active: true })
+  const update = (field: 'name' | 'value' | 'unit') => (event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setForm((current) => ({ ...current, [field]: event.target.value }))
+  const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     onSubmit({ ...form, value: Number(form.value) })
   }
