@@ -1,9 +1,12 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.service;
 
+import com.parkingadmin.dto.Dashboard;
 import com.parkingadmin.entity.Activity;
-import com.parkingadmin.entity.ActivityRepository;
+import com.parkingadmin.entity.ParkingSpace;
 import com.parkingadmin.entity.Revenue;
-import com.parkingadmin.entity.RevenueRepository;
+import com.parkingadmin.entity.SpaceStatus;
+import com.parkingadmin.repository.ActivityRepository;
+import com.parkingadmin.repository.RevenueRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,5 +1,9 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.controller;
 
+import com.parkingadmin.dto.CreateParkingSpace;
+import com.parkingadmin.dto.UpdateParkingSpace;
+import com.parkingadmin.entity.ParkingSpace;
+import com.parkingadmin.service.ParkingSpaceService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;

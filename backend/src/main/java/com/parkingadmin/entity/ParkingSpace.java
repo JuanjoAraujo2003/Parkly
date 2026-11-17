@@ -1,4 +1,4 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

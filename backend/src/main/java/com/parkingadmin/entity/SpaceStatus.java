@@ -1,4 +1,4 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.entity;
 
 public enum SpaceStatus {
     AVAILABLE,
