@@ -249,10 +249,10 @@ function DashboardSection({ dashboard }) {
           <PanelHeader title="Actividad reciente" action="Ver historial" />
           <div className="activity-list">
             {activity.map((item) => (
-              <div className="activity-item" key={`${item.vehicle}-${item.time}`}>
+              <div className="activity-item" key={`${item.vehicle}-${item.occurredAt}`}>
                 <div className={`activity-icon activity-icon--${item.type}`}><ActivityIcon type={item.type} /></div>
                 <div className="activity-copy"><strong>{item.action}</strong><span>{item.vehicle}</span></div>
-                <time>{item.time}</time>
+                <time dateTime={item.occurredAt}>{formatRelativeTime(item.occurredAt)}</time>
               </div>
             ))}
           </div>
@@ -283,6 +283,16 @@ function StatCard({ label, value, detail, icon: Icon, color, trend, trendDown })
 
 function PanelHeader({ title, action }) {
   return <div className="panel-header"><h2>{title}</h2><button className="text-button">{action} <ArrowUpRight size={15} /></button></div>
+}
+
+function formatRelativeTime(isoDate) {
+  const date = new Date(isoDate)
+  const minutes = Math.round((Date.now() - date.getTime()) / 60000)
+  if (minutes < 1) return 'Hace un momento'
+  if (minutes < 60) return `Hace ${minutes} min`
+  const hours = Math.round(minutes / 60)
+  if (hours < 24) return `Hace ${hours} h`
+  return date.toLocaleDateString('es-CO')
 }
 
 function ActivityIcon({ type }) {
