@@ -1,5 +1,10 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.service;
 
+import com.parkingadmin.entity.ParkingSpace;
+import com.parkingadmin.entity.SpaceStatus;
+import com.parkingadmin.exception.ParkingSpaceAlreadyExistsException;
+import com.parkingadmin.exception.ParkingSpaceNotFoundException;
+import com.parkingadmin.repository.ParkingSpaceRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

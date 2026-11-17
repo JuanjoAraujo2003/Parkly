@@ -1,5 +1,6 @@
-package com.parkingadmin.entity;
+package com.parkingadmin.repository;
 
+import com.parkingadmin.entity.Revenue;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

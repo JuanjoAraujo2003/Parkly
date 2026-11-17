@@ -1,4 +1,4 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.dto;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;

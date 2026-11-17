@@ -1,5 +1,8 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.controller;
 
+import com.parkingadmin.dto.Dashboard;
+import com.parkingadmin.dto.Tariff;
+import com.parkingadmin.service.DashboardService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;

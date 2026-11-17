@@ -1,4 +1,6 @@
-package com.parkingadmin.parking;
+package com.parkingadmin.dto;
+
+import com.parkingadmin.entity.ParkingSpace;
 
 import java.math.BigDecimal;
 import java.time.Instant;
