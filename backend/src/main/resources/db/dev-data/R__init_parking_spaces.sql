@@ -21,3 +21,18 @@ ON CONFLICT (id) DO UPDATE SET
     status  = EXCLUDED.status,
     vehicle = EXCLUDED.vehicle,
     since   = EXCLUDED.since;
+
+-- Ingreso de las plazas ocupadas: hoy, a la hora de since. Las demás quedan sin ingreso.
+UPDATE parking_spaces
+   SET entered_at = CASE WHEN status = 'OCCUPIED' THEN CURRENT_DATE + since::time END;
+
+-- Historial para las tendencias del dashboard. Solo se siembra si la tabla está vacía.
+-- Hace 24 h había 5 de 12 plazas en uso (hoy, con los datos de arriba, hay 6 de 12).
+INSERT INTO occupancy_snapshot (recorded_at, in_use, total)
+SELECT now() - INTERVAL '24 hours', 5, 12
+WHERE NOT EXISTS (SELECT 1 FROM occupancy_snapshot);
+
+-- Ingresos de ayer y de hoy para revenueTrend. Solo se siembran si no hay ingresos en esas fechas.
+INSERT INTO revenue (recorded_on, amount)
+SELECT d, a FROM (VALUES (CURRENT_DATE - 1, 150000.00), (CURRENT_DATE, 180000.00)) AS seed (d, a)
+WHERE NOT EXISTS (SELECT 1 FROM revenue WHERE recorded_on IN (CURRENT_DATE - 1, CURRENT_DATE));

@@ -32,15 +32,24 @@ public class Activity {
     @Column(name = "occurred_at", nullable = false)
     private Instant occurredAt;
 
+    // Solo en salidas: minutos de estadía, o null si no se conocía el ingreso.
+    @Column(name = "stay_minutes")
+    private Integer stayMinutes;
+
     // Requerido por JPA.
     protected Activity() {
     }
 
     public Activity(String vehicle, String action, ActivityType type, Instant occurredAt) {
+        this(vehicle, action, type, occurredAt, null);
+    }
+
+    public Activity(String vehicle, String action, ActivityType type, Instant occurredAt, Integer stayMinutes) {
         this.vehicle = vehicle;
         this.action = action;
         this.type = type;
         this.occurredAt = occurredAt;
+        this.stayMinutes = stayMinutes;
     }
 
     public Long getId() {
@@ -61,5 +70,9 @@ public class Activity {
 
     public Instant getOccurredAt() {
         return occurredAt;
+    }
+
+    public Integer getStayMinutes() {
+        return stayMinutes;
     }
 }
