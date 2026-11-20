@@ -14,14 +14,21 @@ import java.util.List;
 @Service
 public class ParkingSpaceService {
     private final ParkingSpaceRepository spaces;
+    private final OccupancySnapshotService snapshots;
 
-    public ParkingSpaceService(ParkingSpaceRepository spaces) {
+    public ParkingSpaceService(ParkingSpaceRepository spaces, OccupancySnapshotService snapshots) {
         this.spaces = spaces;
+        this.snapshots = snapshots;
     }
 
     @Transactional(readOnly = true)
     public List<ParkingSpace> findAll() {
         return spaces.findAll(Sort.by("id"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> zones() {
+        return spaces.findDistinctZones();
     }
 
     @Transactional(readOnly = true)
@@ -34,19 +41,23 @@ public class ParkingSpaceService {
         if (spaces.existsById(id)) {
             throw new ParkingSpaceAlreadyExistsException(id);
         }
-        return spaces.save(new ParkingSpace(id, zone, status, vehicle, since));
+        ParkingSpace space = spaces.save(new ParkingSpace(id, zone, status, vehicle, since));
+        snapshots.record();
+        return space;
     }
 
     @Transactional
     public ParkingSpace update(String id, String zone, SpaceStatus status, String vehicle, String since) {
         ParkingSpace space = findById(id);
         space.update(zone, status, vehicle, since);
+        snapshots.record();
         return space;
     }
 
     @Transactional
     public void delete(String id) {
         spaces.delete(findById(id));
+        snapshots.record();
     }
 }
 

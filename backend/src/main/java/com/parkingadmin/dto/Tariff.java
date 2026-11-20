@@ -1,14 +1,13 @@
 package com.parkingadmin.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-
 import java.math.BigDecimal;
 
+// id es numérico y lo asigna el servidor.
 public record Tariff(
-        @NotBlank String name,
-        @DecimalMin("0.0") BigDecimal value,
-        @NotBlank String unit,
+        Long id,
+        String name,
+        BigDecimal value,
+        String unit,
         boolean active
 ) {
 }
